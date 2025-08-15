@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/data-schema": "^1.21.1",
+    "@aws-amplify/storage": "^6.9.5",
     "@aws-amplify/ui-react": "^6.5.5",
+    "@types/react-router-dom": "^5.3.3",
     "aws-amplify": "^6.15.5",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.8.0"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.5.0",
