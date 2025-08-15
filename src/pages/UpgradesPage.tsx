@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StorageManager } from '../../amplify/storage/resources';
+import { StorageManager } from '../../amplify/amplify/storage/resources';
 import Button from '../components/Button';
 import { UpgradesManager } from '../game/upgradesManager';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StorageManager } from '../../amplify/storage/resources';
+import { StorageManager } from '../../amplify/amplify/storage/resources';
 import { AchievementsManager } from '../game/achievementsManager';
 
 const AchievementsPage: React.FC = () => {
