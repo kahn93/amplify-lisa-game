@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StorageManager } from '../../amplify/storage/resources';
 import Button from '../components/Button';
 import ProgressBar from '../components/ProgressBar';
 import ResourceDisplay from '../components/ResourceDisplay';
@@ -8,11 +9,14 @@ const GamePage: React.FC = () => {
   const [gameLogic] = useState(new GameLogic());
   const [resources, setResources] = useState(gameLogic.getResources());
   const [progress, setProgress] = useState(0);
+  const storageManager = new StorageManager();
 
-  const handleMine = () => {
+  const handleMine = async () => {
     gameLogic.mine();
-    setResources(gameLogic.getResources());
+    const newResources = gameLogic.getResources();
+    setResources(newResources);
     setProgress((prev) => (prev >= 100 ? 0 : prev + 10));
+    await storageManager.adjustPlayerCoins('playerId', newResources); // Example playerId
   };
 
   return (

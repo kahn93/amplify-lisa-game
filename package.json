@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/cli": "^14.0.0",
     "@aws-amplify/data-schema": "^1.21.1",
+    "@aws-amplify/graphql-types-generator": "^3.6.0",
     "@aws-amplify/storage": "^6.9.5",
     "@aws-amplify/ui-react": "^6.5.5",
     "@types/react-router-dom": "^5.3.3",
     "aws-amplify": "^6.15.5",
+    "babel-runtime": "^6.26.0",
+    "core-js": "^3.45.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.8.0"

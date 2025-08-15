@@ -1,6 +1,6 @@
 // Airdrop logic for distributing rewards among players
 
-interface PlayerStats {
+export interface PlayerStats {
   id: string;
   coinsEarned: number;
   upgradesPurchased: number;

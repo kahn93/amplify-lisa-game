@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { StorageManager } from '../../amplify/storage/resources';
 import Button from '../components/Button';
 import { UpgradesManager } from '../game/upgradesManager';
 
 const UpgradesPage: React.FC = () => {
   const upgradesManager = new UpgradesManager();
+  const storageManager = new StorageManager();
   const [coins, setCoins] = useState(1000); // Example initial coin balance
   const [upgrades, setUpgrades] = useState(upgradesManager.getUpgrades());
 
-  const handlePurchase = (id: string) => {
+  const handlePurchase = async (id: string) => {
     const result = upgradesManager.purchaseUpgrade(id, coins);
     if (result.success) {
       setCoins(result.newCoins);
       setUpgrades([...upgrades]); // Update upgrades state
+      await storageManager.savePlayerData('playerId', { upgrades }); // Example playerId
     } else {
       alert('Not enough coins to purchase this upgrade.');
     }
