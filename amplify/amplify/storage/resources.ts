@@ -1,6 +1,6 @@
 // Amplify Storage configuration for handling thousands of players' data
 
-import Storage from '@aws-amplify/storage';
+import { Storage } from 'aws-amplify';
 
 // Define the missing type
 interface ListOutputItemWithPath {

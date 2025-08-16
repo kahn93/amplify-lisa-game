@@ -10,7 +10,7 @@ const DailyCheckInPage: React.FC = () => {
 
   const handleCheckIn = async () => {
     try {
-      await tonConnectManager.handleAirdrop(0.5); // Deduct 0.5 TON from wallet
+      await tonConnectManager.handleAirdrop(); // Deduct TON from wallet
       await storageManager.adjustPlayerCoins('playerId', 10000000); // Example playerId
       alert('Daily check-in successful! You received 10,000,000 coins.');
       setCheckedIn(true);

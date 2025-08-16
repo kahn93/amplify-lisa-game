@@ -77,7 +77,31 @@ button:disabled {
 /* Responsive design */
 @media (max-width: 768px) {
   body {
-    background-size: contain;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .store-page ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .store-page li {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  .game-page img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .nav ul {
+    flex-direction: column;
+    align-items: center;
   }
 }
 
