@@ -1,6 +1,13 @@
 // Amplify Storage configuration for handling thousands of players' data
 
-import { Storage } from 'aws-amplify';
+import Storage from '@aws-amplify/storage';
+
+// Define the missing type
+interface ListOutputItemWithPath {
+  key?: string;
+  size?: number; // Example of a specific property
+  lastModified?: Date; // Example of a specific property
+}
 
 export class StorageManager {
   // Save player data to storage
@@ -19,9 +26,8 @@ export class StorageManager {
   async loadPlayerData(playerId: string): Promise<Record<string, unknown> | null> {
     try {
       const data = await Storage.get(`players/${playerId}.json`, { download: true });
-      if (data && data.Body) {
-        const text = await data.Body.text();
-        return JSON.parse(text);
+      if (data) {
+        return JSON.parse(data);
       }
       console.log(`No data found for player ${playerId}.`);
       return null;
@@ -34,7 +40,7 @@ export class StorageManager {
   // Delete player data from storage
   async deletePlayerData(playerId: string): Promise<void> {
     try {
-      await Storage.remove(`players/${playerId}.json`);
+      await Storage.remove({ key: `players/${playerId}.json` });
       console.log(`Player data for ${playerId} deleted successfully.`);
     } catch (error) {
       console.error(`Error deleting player data for ${playerId}:`, error);
@@ -44,9 +50,11 @@ export class StorageManager {
   // List all players' data
   async listAllPlayers(): Promise<string[]> {
     try {
-      const result = await Storage.list('players/');
+      const result = await Storage.list({ path: 'players/' });
       if (result.items) {
-        return result.items.map((item: { key?: string; }) => item.key || '');
+        return result.items
+          .filter((item: ListOutputItemWithPath) => item.key !== undefined)
+          .map((item: ListOutputItemWithPath) => item.key || '');
       } else {
         console.error('Unexpected result format from Storage.list:', result);
         return [];
