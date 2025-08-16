@@ -1,0 +1,54 @@
+type User @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  id: ID!
+  username: String!
+  email: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  wallet: Wallet @connection
+  transactions: [Transaction] @connection
+}
+
+type Wallet @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  id: ID!
+  address: String!
+  balance: Float!
+  user: User @connection
+}
+
+type Transaction @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  id: ID!
+  amount: Float!
+  type: String!
+  createdAt: AWSDateTime!
+  user: User @connection
+}
+
+type GameData @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  id: ID!
+  playerId: ID!
+  coins: Int!
+  achievements: [String]
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Query {
+  getUserData(id: ID!): User @function(name: "getUserData-${env}")
+  getGameData(playerId: ID!): GameData @function(name: "getGameData-${env}")
+}
+
+type Mutation {
+  updateUserWallet(id: ID!, balance: Float!): Wallet @function(name: "updateUserWallet-${env}")
+  createTransaction(userId: ID!, amount: Float!, type: String!): Transaction @function(name: "createTransaction-${env}")
+  updateGameData(playerId: ID!, coins: Int!, achievements: [String]): GameData @function(name: "updateGameData-${env}")
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Subscription {
+  onUpdateGameData(playerId: ID!): GameData @aws_subscribe(mutations: ["updateGameData"])
+}

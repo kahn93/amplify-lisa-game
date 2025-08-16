@@ -1,6 +1,6 @@
 // Amplify Storage configuration for handling thousands of players' data
 
-import { Storage } from '@aws-amplify/storage';
+import { Storage } from 'aws-amplify';
 
 export class StorageManager {
   // Save player data to storage
@@ -45,7 +45,12 @@ export class StorageManager {
   async listAllPlayers(): Promise<string[]> {
     try {
       const result = await Storage.list('players/');
-      return result.map((item: { key: string; }) => item.key);
+      if (result.items) {
+        return result.items.map((item: { key?: string; }) => item.key || '');
+      } else {
+        console.error('Unexpected result format from Storage.list:', result);
+        return [];
+      }
     } catch (error) {
       console.error('Error listing all players:', error);
       return [];
