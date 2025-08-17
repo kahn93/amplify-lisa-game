@@ -3,7 +3,7 @@ import WebApp from "@twa-dev/sdk";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-import "./index.css";
+import "../index.css";
 
 WebApp.ready();
 

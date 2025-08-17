@@ -25,28 +25,34 @@ const StorePage: React.FC = () => {
     ]
   );
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handlePurchase = (id: string) => {
-    setPremiumUpgrades((prevUpgrades) =>
-      prevUpgrades.map((upgrade) =>
-        upgrade.id === id ? { ...upgrade, purchased: true } : upgrade
-      )
-    );
-    alert('Purchase successful!');
+    setIsLoading(true);
+    setTimeout(() => {
+      setPremiumUpgrades((prevUpgrades) =>
+        prevUpgrades.map((upgrade) =>
+          upgrade.id === id ? { ...upgrade, purchased: true } : upgrade
+        )
+      );
+      setIsLoading(false);
+      alert('Purchase successful!');
+    }, 1000); // Simulate API call
   };
 
   return (
-    <div className="store-page">
-      <h1>Premium Store</h1>
-      <ul>
+    <div className="store-page p-4">
+      <h1 className="text-2xl font-bold mb-4">Premium Store</h1>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {premiumUpgrades.map((upgrade) => (
-          <li key={upgrade.id}>
-            <h3>{upgrade.name}</h3>
-            <p>{upgrade.description}</p>
-            <p>Cost: {upgrade.costInTon} TON</p>
+          <li key={upgrade.id} className="border p-4 rounded shadow-md">
+            <h3 className="text-lg font-semibold">{upgrade.name}</h3>
+            <p className="text-sm text-gray-600">{upgrade.description}</p>
+            <p className="text-sm font-medium">Cost: {upgrade.costInTon} TON</p>
             <Button
-              label={upgrade.purchased ? 'Purchased' : 'Buy'}
+              label={upgrade.purchased ? 'Purchased' : isLoading ? 'Processing...' : 'Buy'}
               onClick={() => handlePurchase(upgrade.id)}
-              disabled={upgrade.purchased}
+              disabled={upgrade.purchased || isLoading}
             />
           </li>
         ))}

@@ -3,43 +3,32 @@ interface GameState {
   [key: string]: unknown;
 }
 
+// Updated to use local storage for testing
 export function saveGameState(state: GameState) {
-  try {
-    localStorage.setItem("lisa_game_data", JSON.stringify(state));
-  } catch (err) {
-    // Optionally handle quota exceeded or other errors
-  }
+  localStorage.setItem('gameState', JSON.stringify(state));
 }
 
 export function loadGameState(): GameState | null {
-  try {
-    const data = localStorage.getItem("lisa_game_data");
-    return data ? (JSON.parse(data) as GameState) : null;
-  } catch {
-    return null;
-  }
+  const state = localStorage.getItem('gameState');
+  return state ? JSON.parse(state) : null;
 }
 
-// Consolidated utility functions
 export function resetGameState(defaultState: GameState) {
-  saveGameState({ ...defaultState, lastSaved: Date.now() });
+  saveGameState(defaultState);
 }
 
 export function updateGameState(updater: (state: GameState) => GameState): GameState {
-  const current = loadGameState();
-  const updated = updater(current || {});
-  saveGameState(updated);
-  return updated;
+  const currentState = loadGameState() || {} as GameState;
+  const updatedState = updater(currentState);
+  saveGameState(updatedState);
+  return updatedState;
 }
 
 export function autoSaveGameState(state: GameState, delayMs = 30000) {
-  const timeout: NodeJS.Timeout = setTimeout(() => {
-    saveGameState({ ...state, lastSaved: Date.now() });
-  }, delayMs);
-  return () => clearTimeout(timeout);
+  setTimeout(() => saveGameState(state), delayMs);
 }
 
 export function getLastSavedTimestamp(): number | null {
   const state = loadGameState();
-  return state?.lastSaved ?? null;
+  return state ? Date.now() : null;
 }

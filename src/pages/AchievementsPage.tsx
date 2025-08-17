@@ -1,8 +1,50 @@
 import { GraphQLAPI as API, graphqlOperation } from '@aws-amplify/api-graphql';
 import React, { useEffect, useState } from 'react';
 import { AchievementsManager } from '../game/achievementsManager';
+import { loadGameState, saveGameState } from '../game/GameStorage';
 import { gqlGetGameState, gqlSaveGameState } from '../graphql/customMutationsAndQueries';
 import { GameState } from '../types/GameState';
+
+const defaultGameState: GameState = {
+  achievements: {
+    unlocked: [],
+    totalUnlocked: 0,
+  },
+  lastSavedTimestamp: Date.now(),
+  playerStats: {
+    coins: 0,
+    level: 1,
+    experience: 0,
+    energy: 100,
+    maxEnergy: 100,
+    health: 100,
+    maxHealth: 100,
+  },
+  inventory: {
+    items: [],
+    capacity: 50,
+    gold: 0,
+  },
+  settings: {
+    soundEnabled: true,
+    notificationsEnabled: true,
+    difficulty: 'medium',
+    language: 'en',
+  },
+  quests: {
+    active: [],
+    completed: [],
+  },
+  worldState: {
+    currentLocation: 'home',
+    visitedLocations: [],
+    timeOfDay: 'morning',
+  },
+  social: {
+    friends: [],
+    messages: [],
+  },
+};
 
 const AchievementsPage: React.FC = () => {
   const achievementsManager = new AchievementsManager();
@@ -13,16 +55,14 @@ const AchievementsPage: React.FC = () => {
     const playerId = ''; // TODO: Replace with actual player ID from auth/session
     const fetchGameState = async () => {
       try {
-        const res = (await API.graphql({
-          query: gqlGetGameState,
-          variables: { playerID: playerId },
-          authMode: 'AMAZON_COGNITO_USER_POOLS', // Adjust authMode as per your setup
-        })) as { data: { getGameState: { gameState: string; }; }; };
+        const res = (await API.graphql(
+          graphqlOperation(gqlGetGameState, { playerID: playerId })
+        )) as { data: { getGameState: { gameState: string; }; }; };
 
         if (res?.data?.getGameState) {
-          const state = JSON.parse(res.data.getGameState.gameState);
+          const state: GameState = JSON.parse(res.data.getGameState.gameState);
           setGameState(state);
-          setEarned(state?.achievements?.unlocked || []);
+          setEarned(state.achievements.unlocked);
         }
       } catch (error) {
         console.error('Error fetching game state:', error);
@@ -31,28 +71,45 @@ const AchievementsPage: React.FC = () => {
     fetchGameState();
   }, []);
 
+  useEffect(() => {
+    const loadedState = loadGameState();
+    const state: GameState = loadedState && 'achievements' in loadedState
+      ? (loadedState as GameState)
+      : defaultGameState;
+    setGameState(state);
+    setEarned(state.achievements.unlocked);
+  }, []);
+
   const handleUnlockAchievement = async (id: string) => {
     achievementsManager.unlockAchievement(id);
     const updatedAchievements = achievementsManager.getAchievements();
     setEarned(updatedAchievements.filter((ach) => ach.isUnlocked).map((ach) => ach.id.toString()));
 
-    const playerId = ''; // TODO: Replace with actual player ID from auth/session
-    const updatedGameState = {
-      ...gameState,
+    const updatedGameState: GameState = {
+      ...gameState!,
       achievements: {
         unlocked: earned,
         totalUnlocked: earned.length,
       },
+      lastSavedTimestamp: Date.now(),
+      playerStats: {
+        ...gameState!.playerStats,
+        experience: (gameState!.playerStats.experience || 0) + 10, // Add experience points
+        coins: gameState!.playerStats.coins + 50, // Reward coins for unlocking achievements
+      },
     };
     setGameState(updatedGameState);
+    saveGameState(updatedGameState);
 
+    const playerId = ''; // TODO: Replace with actual player ID from auth/session
     try {
-      await API.graphql(
+      const res = await API.graphql(
         graphqlOperation(gqlSaveGameState, {
           playerID: playerId,
           gameState: JSON.stringify(updatedGameState),
         })
       );
+      console.log('Game state saved successfully:', res);
     } catch (error) {
       console.error('Error saving game state:', error);
     }

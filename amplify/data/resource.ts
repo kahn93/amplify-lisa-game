@@ -1,17 +1,22 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 /*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
+The section below creates a Todo database table with additional fields for
+"isDone" (boolean) and "createdAt" (timestamp). The authorization rule
+below specifies that unauthenticated users can "read" records, but only
+authenticated users can "create", "update", and "delete" records.
 =========================================================================*/
 const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      isDone: a.boolean(), // New field to track completion status
+      createdAt: a.timestamp(), // New field to track creation time
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization((allow) => [
+      allow.guest().operations(['read']),
+      allow.authenticated().operations(['create', 'read', 'update', 'delete']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -28,7 +33,7 @@ Go to your frontend source code. From your client-side code, generate a
 Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
 WORK IN THE FRONTEND CODE FILE.)
 
-Using JavaScript or Next.js React Server Components, Middleware, Server 
+Using JavaScript or Next.js React Server Components, Middleware, Server
 Actions or Pages Router? Review how to generate Data clients for those use
 cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
 =========================================================================*/
@@ -50,4 +55,4 @@ Fetch records from the database and use them in your frontend component.
   function's RETURN statement */
 // const { data: todos } = await client.models.Todo.list()
 
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
+// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content} - {todo.isDone ? 'Done' : 'Pending'}</li>)}</ul>
