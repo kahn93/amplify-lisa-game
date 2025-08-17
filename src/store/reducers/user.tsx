@@ -1,25 +1,27 @@
 // User reducer to manage user-related state
 
 interface UserState {
-  id: string;
   name: string;
   email: string;
-  avatarUrl?: string;
+}
+
+interface UserAction {
+  type: string;
+  payload?: Partial<UserState>;
 }
 
 const initialState: UserState = {
-  id: '',
   name: '',
   email: '',
-  avatarUrl: '',
 };
 
-const user = (state = initialState, action: any): UserState => {
+const user = (state: UserState = initialState, action: UserAction): UserState => {
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, ...action.payload };
-    case 'CLEAR_USER':
-      return initialState;
+      return {
+        ...state,
+        ...action.payload,
+      };
     default:
       return state;
   }

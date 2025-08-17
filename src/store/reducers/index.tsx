@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux';
 
 // project import
-import game from './game'; // New game state reducer
+import game from './game'; // Updated game state reducer import path
 import user from './user'; // New user reducer
 import wallet from './wallet';
 

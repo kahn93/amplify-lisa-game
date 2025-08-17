@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StorageManager } from '../../amplify/storage/resources';
 import Button from '../components/Button';
-import { UpgradesManager } from '../game/upgradesManager';
+import { UpgradesManager, Upgrade } from '../game/upgradesManager';
 
 const UpgradesPage: React.FC = () => {
   const upgradesManager = new UpgradesManager();
@@ -16,7 +16,11 @@ const UpgradesPage: React.FC = () => {
       try {
         const savedUpgrades = await storageManager.loadPlayerData('playerId');
         if (savedUpgrades) {
-          setUpgrades(savedUpgrades.upgrades);
+          if (Array.isArray(savedUpgrades.upgrades)) {
+            setUpgrades(savedUpgrades.upgrades as Upgrade[]);
+          } else {
+            throw new Error('Invalid upgrades data');
+          }
         }
       } catch (err) {
         setError('Failed to load upgrades.');
@@ -27,7 +31,8 @@ const UpgradesPage: React.FC = () => {
 
   const handlePurchase = async (id: string) => {
     setError(null);
-    const result = upgradesManager.purchaseUpgrade(id, coins); // Corrected method usage
+    const gameState = { player: { lisaTokens: coins } }; // Create a GameState object
+    const result = upgradesManager.purchaseUpgrade(gameState, id); // Pass GameState as the first argument
     if (result.state && result.state.player.lisaTokens !== undefined) {
       setCoins(result.state.player.lisaTokens);
       setUpgrades([...upgrades]); // Update upgrades state
