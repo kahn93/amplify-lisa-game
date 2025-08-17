@@ -1,14 +1,21 @@
 // Amplify Storage configuration for handling thousands of players' data
 
-import { Storage } from '@aws-amplify/storage';
+import { Amplify } from '@aws-amplify/core';
+import { downloadData, DownloadDataInput, list, ListAllWithPathInput, remove, RemoveWithPathInput, uploadData, UploadDataWithPathInput } from '@aws-amplify/storage';
+import awsconfig from '../../aws-exports'; // Adjust the path as necessary
+
+Amplify.configure(awsconfig);
 
 export class StorageManager {
   // Save player data to storage
   async savePlayerData(playerId: string, data: Record<string, unknown>): Promise<void> {
     try {
-      await Storage.put(`players/${playerId}.json`, JSON.stringify(data), {
+      const input: UploadDataWithPathInput = {
+        path: `players/${playerId}.json`,
+        file: new Blob([JSON.stringify(data)], { type: 'application/json' }),
         contentType: 'application/json',
-      });
+      };
+      await uploadData(input);
       console.log(`Player data for ${playerId} saved successfully.`);
     } catch (error) {
       console.error(`Error saving player data for ${playerId}:`, error);
@@ -18,10 +25,13 @@ export class StorageManager {
   // Load player data from storage
   async loadPlayerData(playerId: string): Promise<Record<string, unknown> | null> {
     try {
-      const data = await Storage.get(`players/${playerId}.json`, { download: true });
-      if (data && data.Body) {
-        const text = await data.Body.text();
-        return JSON.parse(text);
+      const input: DownloadDataInput = {
+        key: `players/${playerId}.json`,
+      };
+      const data = await downloadData(input);
+      if (data && 'Body' in data) {
+        const jsonData = await (data.Body as Blob).text();
+        return JSON.parse(jsonData);
       }
       console.log(`No data found for player ${playerId}.`);
       return null;
@@ -34,7 +44,10 @@ export class StorageManager {
   // Delete player data from storage
   async deletePlayerData(playerId: string): Promise<void> {
     try {
-      await Storage.remove(`players/${playerId}.json`);
+      const input: RemoveWithPathInput = {
+        path: `players/${playerId}.json`,
+      };
+      await remove(input);
       console.log(`Player data for ${playerId} deleted successfully.`);
     } catch (error) {
       console.error(`Error deleting player data for ${playerId}:`, error);
@@ -44,8 +57,18 @@ export class StorageManager {
   // List all players' data
   async listAllPlayers(): Promise<string[]> {
     try {
-      const result = await Storage.list('players/');
-      return result.map((item: { key: string; }) => item.key);
+      const input: ListAllWithPathInput = {
+        path: 'players/',
+      };
+      const result = await list(input);
+      if (result.items) {
+        return (result.items as { key?: string; }[])
+          .filter((item) => 'key' in item && item.key !== undefined)
+          .map((item) => item.key || '');
+      } else {
+        console.error('Unexpected result format from list:', result);
+        return [];
+      }
     } catch (error) {
       console.error('Error listing all players:', error);
       return [];

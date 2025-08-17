@@ -1,6 +1,6 @@
 // Save and Load Manager for the click mining game
 
-import { databaseSchema } from '../../amplify/amplify/backend/databaseSchema';
+import { databaseSchema } from '../../amplify/backend/databaseSchema';
 
 export class SaveLoadManager {
   private storageKey = 'clickMiningGameSave';

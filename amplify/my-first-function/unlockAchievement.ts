@@ -1,4 +1,4 @@
-import { AchievementsManager } from '../../src/game/achievementsManager';
+import { AchievementsManager } from '../../../src/game/achievementsManager';
 
 interface UnlockAchievementEvent {
   arguments: {

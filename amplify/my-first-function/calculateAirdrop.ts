@@ -1,5 +1,5 @@
-import { AirdropLogic } from '../../src/game/airdropLogic';
-import type { PlayerStats } from '../../src/game/airdropLogic';
+import type { PlayerStats } from '../../../src/game/airdropLogic';
+import { AirdropLogic } from '../../../src/game/airdropLogic';
 
 interface HandlerEvent {
   arguments: {

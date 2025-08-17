@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StorageManager } from '../../amplify/amplify/storage/resources';
+import { StorageManager } from '../../amplify/storage/resources';
 import Button from '../components/Button';
 import { UpgradesManager } from '../game/upgradesManager';
 
@@ -10,13 +10,13 @@ const UpgradesPage: React.FC = () => {
   const [upgrades, setUpgrades] = useState(upgradesManager.getUpgrades());
 
   const handlePurchase = async (id: string) => {
-    const result = upgradesManager.purchaseUpgrade(id, coins);
-    if (result.success) {
+    const result = upgradesManager.purchaseUpgradeStandalone(id, coins);
+    if (result.success && result.newCoins !== undefined) {
       setCoins(result.newCoins);
       setUpgrades([...upgrades]); // Update upgrades state
       await storageManager.savePlayerData('playerId', { upgrades }); // Example playerId
     } else {
-      alert('Not enough coins to purchase this upgrade.');
+      alert(result.message);
     }
   };
 

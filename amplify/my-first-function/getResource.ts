@@ -1,4 +1,4 @@
-import { ResourceManager } from '../../src/game/resourceManager';
+import { ResourceManager } from '../../../src/game/resourceManager';
 
 interface GetResourceEvent {
   arguments: {

@@ -1,4 +1,4 @@
-import { TonConnectManager } from '../../src/tonconnect/TonConnectManager';
+import { TonConnectManager } from '../../../src/tonconnect/TonConnectManager';
 
 interface HandlerEvent {
   arguments: {
