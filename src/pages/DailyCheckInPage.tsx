@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StorageManager } from '../../amplify/amplify/storage/resources';
+import { StorageManager } from '../../amplify/storage/resources'; // Corrected import path
 import Button from '../components/Button';
-import { TonConnectManager } from '../tonconnect/TonConnectManager';
+import TonConnectManager from '../managers/TonConnectManager';
 
 const DailyCheckInPage: React.FC = () => {
   const [checkedIn, setCheckedIn] = useState(false);
