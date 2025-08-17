@@ -107,7 +107,8 @@ const AchievementsPage: React.FC = () => {
         graphqlOperation(gqlSaveGameState, {
           playerID: playerId,
           gameState: JSON.stringify(updatedGameState),
-        }) // Removed invalid options argument
+        }),
+        {} // Added empty options argument
       );
       console.log('Game state saved successfully:', res);
     } catch (error) {
