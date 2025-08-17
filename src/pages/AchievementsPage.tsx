@@ -1,5 +1,5 @@
-import { GraphQLAPI as API, graphqlOperation } from '@aws-amplify/api-graphql';
 import React, { useEffect, useState } from 'react';
+import GraphQLAPI from '../api/GraphQLAPI';
 import { AchievementsManager } from '../game/achievementsManager';
 import { loadGameState, saveGameState } from '../game/GameStorage';
 import { gqlGetGameState, gqlSaveGameState } from '../graphql/customMutationsAndQueries';
@@ -55,8 +55,16 @@ const AchievementsPage: React.FC = () => {
     const playerId = ''; // TODO: Replace with actual player ID from auth/session
     const fetchGameState = async () => {
       try {
-        const res = (await API.graphql(
-          graphqlOperation(gqlGetGameState, { playerID: playerId }) // Removed invalid options argument
+        const options = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`, // Retrieve authToken from localStorage or provide a fallback
+          },
+        };
+
+        const res = (await GraphQLAPI.query(
+          gqlGetGameState,
+          { playerID: playerId },
+          options // Pass headers directly to GraphQLAPI
         )) as { data: { getGameState: { gameState: string; }; }; };
 
         if (res?.data?.getGameState) { // Corrected misplaced parenthesis
@@ -102,13 +110,20 @@ const AchievementsPage: React.FC = () => {
     saveGameState(updatedGameState);
 
     const playerId = ''; // TODO: Replace with actual player ID from auth/session
+    const options = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`, // Retrieve authToken from localStorage or provide a fallback
+      },
+    };
+
     try {
-      const res = await API.graphql(
-        graphqlOperation(gqlSaveGameState, {
+      const res = await GraphQLAPI.mutate(
+        gqlSaveGameState,
+        {
           playerID: playerId,
           gameState: JSON.stringify(updatedGameState),
-        }),
-        {} // Added empty options argument
+        },
+        options // Pass headers directly to GraphQLAPI
       );
       console.log('Game state saved successfully:', res);
     } catch (error) {
