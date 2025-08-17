@@ -18,6 +18,7 @@
     "@aws-cdk/cloud-assembly-schema": "^48.4.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@supabase/supabase-js": "^2.55.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "@ton/core": "^0.61.0",
     "@ton/ton": "^15.3.1",
     "@tonconnect/protocol": "^2.3.0",

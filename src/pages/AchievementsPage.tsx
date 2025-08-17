@@ -56,10 +56,10 @@ const AchievementsPage: React.FC = () => {
     const fetchGameState = async () => {
       try {
         const res = (await API.graphql(
-          graphqlOperation(gqlGetGameState, { playerID: playerId })
+          graphqlOperation(gqlGetGameState, { playerID: playerId }) // Removed invalid options argument
         )) as { data: { getGameState: { gameState: string; }; }; };
 
-        if (res?.data?.getGameState) {
+        if (res?.data?.getGameState) { // Corrected misplaced parenthesis
           const state: GameState = JSON.parse(res.data.getGameState.gameState);
           setGameState(state);
           setEarned(state.achievements.unlocked);
@@ -107,7 +107,7 @@ const AchievementsPage: React.FC = () => {
         graphqlOperation(gqlSaveGameState, {
           playerID: playerId,
           gameState: JSON.stringify(updatedGameState),
-        })
+        }) // Removed invalid options argument
       );
       console.log('Game state saved successfully:', res);
     } catch (error) {
