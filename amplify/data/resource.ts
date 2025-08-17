@@ -14,8 +14,8 @@ const schema = a.schema({
       createdAt: a.timestamp(), // New field to track creation time
     })
     .authorization((allow) => [
-      allow.guest().operations(['read']),
-      allow.authenticated().operations(['create', 'read', 'update', 'delete']),
+      allow.guest().read(), // Replaced 'operations' with specific methods
+      allow.authenticated().create().update().delete().read(),
     ]),
 });
 
